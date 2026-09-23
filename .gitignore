@@ -1,0 +1,28 @@
+# --- Secrets (NEVER commit) ---
+# The real API keys / DB credentials live in .env files. Only .env.example is committed.
+.env
+*.env
+!*.env.example
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Project artifacts ---
+*.log
+backend/requirements.lock.txt
+
+# Internal spec — kept private, never in the public repo
+Spec-Opportunity-Analysis-Dashboard-*.docx

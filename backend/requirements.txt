@@ -1,0 +1,35 @@
+# Python dependencies — Phase 1 (PINNED)
+#
+# These are the packages the spec (§4.2) wants provisioned in Phase 1. A few are installed now
+# but only EXERCISED in later phases (marked below) — that's intentional, so the environment is
+# complete from the start.
+#
+# Versions are pinned to exactly what the first clean build resolved on 2026-09-11, so the build
+# is reproducible. To upgrade deliberately later: bump a pin, `docker compose build`, retest.
+
+# --- Reasoning core (used in Phase 1) — LangChain v1.x generation ---
+langgraph==1.2.11                # the graph orchestrator (StateGraph, nodes, edges)
+langchain==1.4.0                 # core LangChain package
+langchain-core==1.6.3            # shared primitives (messages, runnables) — pinned for stability
+langchain-community==0.4.2       # community integrations (tools/retrievers) — used from Phase 3
+langchain-google-genai==4.4.0    # the Google Gemini chat-model wrapper (our LLM in Phase 1)
+
+# --- Data validation (used in Phase 1) ---
+pydantic==2.13.5                 # typed models + validation for the opportunity/profile schema
+python-dotenv==1.2.3             # loads the .env file into environment variables
+
+# --- Web layer (Phase 5) ---
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+python-multipart==0.0.32          # required by FastAPI for multipart file uploads
+openpyxl==3.1.5                   # .xlsx parsing
+
+# --- Web search for the Researcher (Phase 3) ---
+ddgs==9.16.0                     # DuckDuckGo search backend (no API key); used via langchain-community
+
+# --- Retrieval (installed now, optional, used from Phase 3) ---
+faiss-cpu==1.15.0
+
+# --- Persistence (installed now, used in Phase 4) ---
+sqlalchemy==2.0.52
+psycopg[binary]==3.3.5

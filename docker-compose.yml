@@ -1,0 +1,59 @@
+# Docker Compose — Phase 1
+#
+# WHY: One command (`docker compose up`) reproduces the whole environment. Python and every
+# dependency live INSIDE the containers, so your Windows host stays completely clean.
+#
+# Two services:
+#   - backend : our Python app (LangChain / LangGraph). In Phase 1 there is no web server yet,
+#               so the container just stays alive (`sleep infinity`) and we run scripts inside it
+#               with `docker compose exec backend python ...`.
+#   - db      : PostgreSQL. Declared now (you chose "Compose from day one") but UNUSED until
+#               Phase 4. Its data is kept in a named volume so it survives restarts.
+
+services:
+  backend:
+    build: ./backend                 # build the image from backend/Dockerfile
+    env_file:
+      - ./backend/.env               # loads GOOGLE_API_KEY etc. (this file is gitignored)
+    volumes:
+      # Bind-mount the source code so edits on your host appear instantly in the container
+      # (no rebuild needed to re-run a script). Dependencies are NOT here — they are baked
+      # into the image, so nothing installs on Windows.
+      - ./backend:/app
+      # Make the project-level data/ folder (sample Excel/JSON) available inside the container.
+      - ./data:/app/data
+    working_dir: /app
+    # Phase 5: run the FastAPI service (auto-reload on code changes via the bind mount).
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    ports:
+      - "8000:8000"          # exposes the API to the host for curl / the dashboard
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app                       # live code editing
+      - frontend_node_modules:/app/node_modules  # deps live in a named volume, not on the host
+    environment:
+      VITE_API_BASE: "http://localhost:8000/api/v1"   # browser (host) reaches the backend here
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:16               # official Postgres; nothing custom to build
+    environment:
+      POSTGRES_USER: opp
+      POSTGRES_PASSWORD: opp_dev_password   # dev-only; real deployments use secrets
+      POSTGRES_DB: opportunities
+    volumes:
+      - pgdata:/var/lib/postgresql/data     # named volume => data persists across `down`/`up`
+    ports:
+      - "5432:5432"                  # exposed so you can inspect the DB from the host if you like
+
+# Named volumes are managed by Docker (not bind-mounted from your host filesystem).
+volumes:
+  pgdata:
+  frontend_node_modules:

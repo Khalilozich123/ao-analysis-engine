@@ -17,7 +17,32 @@ This is a **personal project** of mine. It reimagines an earlier low-code protot
 
 ---
 
+## Why I built this
+
+**The goal of this project was to learn [LangGraph](https://langchain-ai.github.io/langgraph/) —
+to understand, hands-on, how it works and where it actually helps.** The procurement-triage use
+case is really a vehicle for that: it gave me a realistic problem messy enough to justify a
+*multi-agent* design rather than a single prompt.
+
+Along the way I wanted to answer, in code, questions like:
+- **How do you model a stateful, multi-agent workflow?** — a `StateGraph` with a typed shared
+  state passed between nodes (Supervisor → Researcher → Analyst → Decision).
+- **How do agents loop and cooperate?** — the Analyst can flag gaps and send work *back* to the
+  Researcher, a conditional cycle with a hard iteration guard so it always terminates.
+- **What does LangGraph give you over hand-rolled orchestration?** — explicit graph structure,
+  inspectable state, conditional edges, and a graph you can literally render as a diagram.
+- **How does it compose with the rest of a real app?** — invoked per-opportunity from a FastAPI
+  background job, with a pluggable LLM and a free offline scorer so the graph runs without a key.
+
+So while it's a working full-stack app, its real purpose is a **learning artifact for LangGraph**
+and agentic orchestration. Deployment is intentionally *not* part of this repo — the focus is the
+reasoning core and how the pieces fit, not hosting. If you're here to see how LangGraph is used,
+start with [The reasoning core (LangGraph)](#the-reasoning-core-langgraph).
+
+---
+
 ## Table of contents
+- [Why I built this](#why-i-built-this)
 - [Features](#features)
 - [Demo](#demo)
 - [Architecture](#architecture)
